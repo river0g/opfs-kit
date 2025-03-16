@@ -12,6 +12,8 @@
   "scripts": {
     "build": "tsc",
     "dev": "tsc --watch",
+    "test": "vitest run",
+    "test:watch": "vitest",
     "lint": "biome check --write ./src",
     "lint:fix": "biome check --write --unsafe ./src",
     "lint:ci": "biome ci ./src",
@@ -26,6 +28,7 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "@biomejs/biome": "^1.5.3"
+    "@biomejs/biome": "^1.5.3",
+    "vitest": "^3.0.8"
   }
 }
