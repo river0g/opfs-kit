@@ -70,6 +70,24 @@ describe('Bufferクラス', () => {
       expect(buf[1]).toBe(105);
       expect(buf.toString()).toBe('Hi');
     });
+    
+    // エッジケース: 大きなデータの処理
+    it('大きなデータからBufferを作成できること', () => {
+      // 1MBのデータを作成
+      const size = 1024 * 1024;
+      const largeArray = new Uint8Array(size);
+      for (let i = 0; i < size; i++) {
+        largeArray[i] = i % 256;
+      }
+      
+      const buf = Buffer.from(largeArray);
+      
+      // サイズと内容の一部を確認
+      expect(buf.length).toBe(size);
+      expect(buf[0]).toBe(0);
+      expect(buf[255]).toBe(255);
+      expect(buf[256]).toBe(0);
+    });
   });
   
   describe('allocメソッド', () => {
@@ -94,6 +112,20 @@ describe('Bufferクラス', () => {
       expect(buf instanceof Uint8Array).toBe(true);
       expect(buf.length).toBe(0);
     });
+    
+    // エッジケース: 非常に大きなサイズのBuffer
+    it('大きなサイズのBufferを作成できること', () => {
+      // 10MBのBufferを作成
+      const size = 10 * 1024 * 1024;
+      const buf = Buffer.alloc(size);
+      
+      // 正しいサイズを持つことを確認
+      expect(buf.length).toBe(size);
+      
+      // いくつかのインデックスをチェック
+      expect(buf[0]).toBe(0);
+      expect(buf[size - 1]).toBe(0);
+    });
   });
   
   describe('toStringメソッド', () => {
@@ -114,6 +146,20 @@ describe('Bufferクラス', () => {
       // Base64に正しく変換されることを確認
       expect(buf.toString('base64')).toBe(base64);
     });
+    
+    // エッジケース: 非ASCII文字を含む文字列
+    it('非ASCII文字を含む文字列を正しく処理できること', () => {
+      const text = '🚀 こんにちは世界! Привет мир! مرحبا بالعالم!';
+      const buf = Buffer.from(text);
+      
+      // 元の文字列に戻せることを確認
+      expect(buf.toString()).toBe(text);
+      
+      // Base64に変換して戻せることを確認
+      const base64 = buf.toString('base64');
+      const bufFromBase64 = Buffer.from(base64, 'base64');
+      expect(bufFromBase64.toString()).toBe(text);
+    });
   });
   
   describe('特殊ケース', () => {
@@ -126,11 +172,33 @@ describe('Bufferクラス', () => {
     });
     
     it('日本語などのマルチバイト文字を正しく処理できること', () => {
-      const text = 'こんにちは世界'; // "こんにちは世界"
+      const text = 'こんにちは世界';
       const buf = Buffer.from(text);
       
       expect(buf instanceof Uint8Array).toBe(true);
       expect(buf.toString()).toBe(text);
+    });
+    
+    // エッジケース: 無効なエンコーディング
+    it('無効なエンコーディングを指定した場合はデフォルトのUTF-8として処理すること', () => {
+      const text = 'Hello World';
+      const buf = Buffer.from(text);
+      
+      // @ts-ignore - 意図的に無効なエンコーディングを渡す
+      expect(buf.toString('invalid_encoding')).toBe(text);
+    });
+    
+    // エッジケース: 非常に長い文字列
+    it('非常に長い文字列を処理できること', () => {
+      // 100KBの文字列を作成
+      let longText = '';
+      for (let i = 0; i < 10000; i++) {
+        longText += 'abcdefghij'; // 10文字 x 10000 = 100,000文字
+      }
+      
+      const buf = Buffer.from(longText);
+      expect(buf.length).toBe(longText.length);
+      expect(buf.toString()).toBe(longText);
     });
   });
 });
