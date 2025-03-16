@@ -11,7 +11,11 @@
   ],
   "scripts": {
     "build": "tsc",
-    "dev": "tsc --watch"
+    "dev": "tsc --watch",
+    "lint": "biome check --write ./src",
+    "lint:fix": "biome check --write --unsafe ./src",
+    "lint:ci": "biome ci ./src",
+    "format": "biome format --write ./src"
   },
   "keywords": [
     "opfs",
@@ -20,5 +24,8 @@
     "storage"
   ],
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "devDependencies": {
+    "@biomejs/biome": "^1.5.3"
+  }
 }
