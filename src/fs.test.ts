@@ -108,7 +108,8 @@ describe('readFile関数', () => {
   // 正常系テスト - Promiseスタイル（バイナリ）
   it('Promiseスタイルでバイナリファイルを正常に読み込むこと', async () => {
     const result = await readFile(testFilePath, 'binary');
-    expect(result instanceof Buffer).toBe(true);
+    // Bufferクラスのインスタンスであることを確認
+    expect(result instanceof Uint8Array).toBe(true);
     expect(fsUtils.getDirectoryAndFileName).toHaveBeenCalledWith(testFilePath);
     expect(mockDirectory.getFileHandle).toHaveBeenCalledWith('file.txt');
     expect(mockFile.arrayBuffer).toHaveBeenCalled();
